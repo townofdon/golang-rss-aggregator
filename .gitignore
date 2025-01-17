@@ -1,3 +1,4 @@
 .vscode/
-
+vendor/
+.env
 tutorial-go-rss-server
