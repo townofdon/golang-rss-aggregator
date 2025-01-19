@@ -17,6 +17,9 @@ go build
 ## Test
 
 ```
+# GET request
 curl -i localhost:8000/v1/healthz
+
+# POST request
 curl -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" -X POST -i http://localhost:8000/v1/something
 ```

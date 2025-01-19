@@ -24,3 +24,17 @@ func RespondWithJSON(res http.ResponseWriter, statusCode int, payload interface{
 		return
 	}
 }
+
+func RespondWithError(res http.ResponseWriter, statusCode int, msg string) {
+	if statusCode > 499 {
+		log.Printf("Internal Server Error: %v\n", msg)
+	}
+
+	type errorResponse struct {
+		Error string `json:"error"`
+	}
+
+	RespondWithJSON(res, statusCode, errorResponse{
+		Error: msg,
+	})
+}
