@@ -30,7 +30,7 @@ To migrate:
 Or, manually:
 
 ```
-goose postgres <DB_URL> up
+goose postgres $DB_URL up
 # e.g.
 goose postgres postgres://superuser:tacotuesdays@localhost:5432/golang_rss up
 ```
@@ -38,7 +38,7 @@ goose postgres postgres://superuser:tacotuesdays@localhost:5432/golang_rss up
 To rollback:
 
 ```
-goose postgres <DB_URL> down
+goose postgres $DB_URL down
 ```
 
 ## Generate DB Queries

@@ -10,7 +10,6 @@ import (
 
 	"github.com/townofdon/tutorial-go-rss-server/internal/database"
 	"github.com/townofdon/tutorial-go-rss-server/src/api"
-	"github.com/townofdon/tutorial-go-rss-server/src/models"
 	"github.com/townofdon/tutorial-go-rss-server/src/util"
 )
 
@@ -40,9 +39,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request, api *api.Clients) {
 		return
 	}
 
-	util.RespondWithJSON(w, 201, models.DatabaseUserToWire(user))
+	util.RespondWithJSON(w, 201, user)
 }
 
 func GetUserByApiKey(w http.ResponseWriter, r *http.Request, api *api.Clients, user database.User) {
-	util.RespondWithJSON(w, 200, models.DatabaseUserToWire(user))
+	util.RespondWithJSON(w, 200, user)
 }

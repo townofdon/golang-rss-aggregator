@@ -28,8 +28,9 @@ func main() {
 
 	v1Router := chi.NewRouter()
 	v1Router.Get("/healthz", v1.HandleHealthCheck)
-	v1Router.Get("/users/current", auth.Handler(&clients, v1.GetUserByApiKey))
 	v1Router.Post("/users", api.Handler(&clients, v1.CreateUser))
+	v1Router.Get("/users/current", auth.Handler(&clients, v1.GetUserByApiKey))
+	v1Router.Post("/feeds", auth.Handler(&clients, v1.CreateFeed))
 
 	router.Mount("/v1", v1Router)
 
