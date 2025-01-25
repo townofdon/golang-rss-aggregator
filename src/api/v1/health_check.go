@@ -3,7 +3,7 @@ package v1
 import (
 	"net/http"
 
-	"github.com/townofdon/tutorial-go-rss-server/util"
+	"github.com/townofdon/tutorial-go-rss-server/src/util"
 )
 
 func HandleHealthCheck(w http.ResponseWriter, r *http.Request) {
