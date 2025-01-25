@@ -1,4 +1,4 @@
-package api
+package v1
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/townofdon/tutorial-go-rss-server/src/util"
 )
 
-func HandleHealthCheck(w http.ResponseWriter, r *http.Request) {
+func (endpoint *Endpoint) HandleHealthCheck(w http.ResponseWriter, r *http.Request) {
 	util.RespondWithJSON(w, 200, struct {
 		Msg string `json:"msg"`
 	}{

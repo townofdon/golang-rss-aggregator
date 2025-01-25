@@ -8,12 +8,15 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/townofdon/tutorial-go-rss-server/src/api"
-	v1 "github.com/townofdon/tutorial-go-rss-server/src/api/v1"
-	"github.com/townofdon/tutorial-go-rss-server/src/auth"
+	apiV1 "github.com/townofdon/tutorial-go-rss-server/src/api/v1"
 )
 
 func main() {
-	clients, port := api.SetupApiClients()
+	port := api.GetPort()
+	// experimented with various methods of passing the db client around - 1) via global state and init, 2) via methods
+	db, _ := api.GetDBClient()
+	clients := api.Clients{DB: db}
+	v1 := apiV1.SetupEndpoints(&clients)
 
 	router := chi.NewRouter()
 
@@ -26,13 +29,20 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	// varying ways to achieve an authenticated route - 1) via closure, 2) via middleware
 	v1Router := chi.NewRouter()
 	v1Router.Get("/healthz", v1.HandleHealthCheck)
-	v1Router.Post("/users", api.Handler(&clients, v1.CreateUser))
-	v1Router.Get("/users/current", auth.Handler(&clients, v1.GetUserByApiKey))
-	v1Router.Post("/feeds", auth.Handler(&clients, v1.CreateFeed))
+	v1Router.Post("/users", v1.CreateUser)
+	v1Router.Get("/users/current", api.Authorized(v1.GetUserByApiKey))
+	v1Router.Post("/feeds", api.Authorized(v1.CreateFeed))
+	v1Router.Get("/feeds", v1.GetAllFeeds)
+
+	v1AdminRouter := chi.NewRouter()
+	v1AdminRouter.Use(api.AuthorizedMiddleware)
+	v1AdminRouter.Get("/healthz", v1.HandleHealthCheck)
 
 	router.Mount("/v1", v1Router)
+	router.Mount("/v1/admin", v1AdminRouter)
 
 	server := &http.Server{
 		Handler: router,

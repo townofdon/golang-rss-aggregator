@@ -1,4 +1,4 @@
-package api
+package v1
 
 import (
 	"encoding/json"
@@ -9,11 +9,10 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/townofdon/tutorial-go-rss-server/internal/database"
-	"github.com/townofdon/tutorial-go-rss-server/src/api"
 	"github.com/townofdon/tutorial-go-rss-server/src/util"
 )
 
-func CreateUser(w http.ResponseWriter, r *http.Request, api *api.Clients) {
+func (api *Endpoint) CreateUser(w http.ResponseWriter, r *http.Request) {
 	type requestParams struct {
 		Name string `json:"name"`
 	}
@@ -42,6 +41,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request, api *api.Clients) {
 	util.RespondWithJSON(w, 201, user)
 }
 
-func GetUserByApiKey(w http.ResponseWriter, r *http.Request, api *api.Clients, user database.User) {
+func (endpoint *Endpoint) GetUserByApiKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	util.RespondWithJSON(w, 200, user)
 }

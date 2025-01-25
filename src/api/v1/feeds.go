@@ -1,4 +1,4 @@
-package api
+package v1
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 	"github.com/townofdon/tutorial-go-rss-server/src/util"
 )
 
-func CreateFeed(w http.ResponseWriter, r *http.Request, api *api.Clients, user database.User) {
+func (e *Endpoint) CreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type paramsDef struct {
 		Name string `json:"name"`
 		Url  string `json:"url"`
@@ -36,19 +36,37 @@ func CreateFeed(w http.ResponseWriter, r *http.Request, api *api.Clients, user d
 		return
 	}
 
-	feed, err := api.DB.CreateFeed(r.Context(), database.CreateFeedParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-		Name:      params.Name,
-		Url:       params.Url,
-		UserID:    user.ID,
+	api.WithDBClient(func(db *database.Queries) {
+		feed, err := db.CreateFeed(r.Context(), database.CreateFeedParams{
+			ID:        uuid.New(),
+			CreatedAt: time.Now().UTC(),
+			UpdatedAt: time.Now().UTC(),
+			Name:      params.Name,
+			Url:       params.Url,
+			UserID:    user.ID,
+		})
+
+		if err != nil {
+			util.RespondWithError(w, 500, fmt.Sprintf("Error creating feed: %v", err))
+			return
+		}
+
+		if err != nil {
+			util.RespondWithError(w, 500, fmt.Sprintf("Error creating feed: %v", err))
+			return
+		}
+
+		util.RespondWithJSON(w, 201, feed)
 	})
+}
+
+func (api *Endpoint) GetAllFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := api.DB.GetFeeds(r.Context())
 
 	if err != nil {
-		util.RespondWithError(w, 500, fmt.Sprintf("Error creating feed: %v", err))
+		util.RespondWithError(w, 500, fmt.Sprintf("Error getting feeds: %v", err))
 		return
 	}
 
-	util.RespondWithJSON(w, 201, feed)
+	util.RespondWithJSON(w, 200, feeds)
 }
