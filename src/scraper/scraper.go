@@ -39,11 +39,6 @@ func Start(
 func scrapeFeed(wg *sync.WaitGroup, db *database.Queries, feed database.Feed) {
 	// decrements wait counter by 1
 	defer wg.Done()
-	_, err := db.MarkFeedAsFetched(context.Background(), feed.ID)
-	if err != nil {
-		log.Error(fmt.Sprintf("[scraper] unable to mark feed %v as fetched - ", feed.ID) + err.Error())
-		return
-	}
 	rssFeed, err := util.UrlToFeed(feed.Url)
 	if err != nil {
 		log.Error(fmt.Sprintf("[scraper] could not parse RSS feed for url %v - ", feed.Url) + err.Error())
@@ -52,5 +47,10 @@ func scrapeFeed(wg *sync.WaitGroup, db *database.Queries, feed database.Feed) {
 	log.Info(fmt.Sprintf("[scraper] feed \"%s\" collected, %v posts found", feed.Name, len(rssFeed.Channel.Item)))
 	for i, item := range rssFeed.Channel.Item {
 		log.Info(fmt.Sprintf("[scraper] found post %v: %v", i+1, item.Title))
+	}
+	_, err = db.MarkFeedAsFetched(context.Background(), feed.ID)
+	if err != nil {
+		log.Error(fmt.Sprintf("[scraper] unable to mark feed %v as fetched - ", feed.ID) + err.Error())
+		return
 	}
 }
