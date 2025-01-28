@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/townofdon/tutorial-go-rss-server/src/api"
 	apiV1 "github.com/townofdon/tutorial-go-rss-server/src/api/v1"
+	"github.com/townofdon/tutorial-go-rss-server/src/scraper"
 )
 
 func main() {
@@ -53,6 +55,12 @@ func main() {
 	}
 
 	fmt.Printf("Server running on port %s...\n", port)
+
+	go scraper.Start(
+		db,
+		8,
+		1*time.Minute,
+	)
 
 	err := server.ListenAndServe()
 	if err != nil {
