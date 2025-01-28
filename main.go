@@ -37,12 +37,15 @@ func main() {
 	v1Router.Post("/feeds", api.Authorized(v1.CreateFeed))
 	v1Router.Get("/feeds", v1.GetAllFeeds)
 
-	v1AdminRouter := chi.NewRouter()
-	v1AdminRouter.Use(api.AuthorizedMiddleware)
-	v1AdminRouter.Get("/healthz", v1.HandleHealthCheck)
+	v1Router.Group(func(router chi.Router) {
+		router.Use(api.AuthorizedMiddleware)
+		router.Get("/admin/healthz", v1.HandleHealthCheck)
+		router.Post("/feed-follows", v1.CreateFeedFollow)
+		router.Get("/users/current/feed-follows", v1.GetFeedFollowsForCurrentUser)
+		router.Delete("/feed-follows/{feedFollowId}", v1.DeleteFeedFollow)
+	})
 
 	router.Mount("/v1", v1Router)
-	router.Mount("/v1/admin", v1AdminRouter)
 
 	server := &http.Server{
 		Handler: router,

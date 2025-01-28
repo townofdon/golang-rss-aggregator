@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -11,6 +12,8 @@ import (
 )
 
 type AuthHandlerFunc func(http.ResponseWriter, *http.Request, database.User)
+
+type CtxKeyUser struct{}
 
 func Authorized(handler AuthHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +33,8 @@ func Authorized(handler AuthHandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		handler(w, r, user)
+		ctx := context.WithValue(r.Context(), CtxKeyUser{}, user)
+		handler(w, r.WithContext(ctx), user)
 	}
 }
 
@@ -43,14 +47,16 @@ func AuthorizedMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		WithDBClient(func(db *database.Queries) {
-			_, err := db.GetUserByApiKey(r.Context(), apiKey)
+		db, _ := GetDBClient()
+		user, err := db.GetUserByApiKey(r.Context(), apiKey)
 
-			if err != nil {
-				util.RespondWithError(w, 404, fmt.Sprintf("Error getting user: %v", err))
-				return
-			}
-			next.ServeHTTP(w, r)
-		})
+		if err != nil {
+			util.RespondWithError(w, 403, fmt.Sprintf("Error getting user: %v", err))
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), CtxKeyUser{}, user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+
 	})
 }

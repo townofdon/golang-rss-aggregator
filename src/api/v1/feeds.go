@@ -51,11 +51,6 @@ func (e *Endpoint) CreateFeed(w http.ResponseWriter, r *http.Request, user datab
 			return
 		}
 
-		if err != nil {
-			util.RespondWithError(w, 500, fmt.Sprintf("Error creating feed: %v", err))
-			return
-		}
-
 		util.RespondWithJSON(w, 201, feed)
 	})
 }
