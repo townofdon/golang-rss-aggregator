@@ -21,7 +21,7 @@ func Start(
 ) {
 	log.Info(fmt.Sprintf("[scraper] scraping %v threads every %s", concurrency, timeBetweenRequests))
 	ticker := time.NewTicker(timeBetweenRequests)
-	for ; ; <-ticker.C {
+	for {
 		feeds, err := db.GetNextFeedsToFetch(context.Background(), int32(concurrency))
 		if err != nil {
 			log.Error("[scraper] " + err.Error())
@@ -36,6 +36,11 @@ func Start(
 		}
 		// waits until wait conter is zero
 		wg.Wait()
+
+		_, ok := <-ticker.C
+		if !ok {
+			break
+		}
 	}
 }
 
