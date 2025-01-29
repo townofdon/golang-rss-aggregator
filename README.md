@@ -1,4 +1,4 @@
-# Go - RSS Feed Tutorial
+# Go - RSS Feed Aggregator Tutorial
 
 Source:
 
