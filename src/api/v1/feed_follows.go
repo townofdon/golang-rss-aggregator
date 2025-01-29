@@ -77,7 +77,7 @@ func (e *Endpoint) GetFeedFollowsForCurrentUser(w http.ResponseWriter, r *http.R
 		feeds = make([]database.GetFeedFollowsByUserIdRow, 0)
 	}
 
-	util.RespondWithJSON(w, 201, feeds)
+	util.RespondWithJSON(w, 200, feeds)
 }
 
 func (e *Endpoint) DeleteFeedFollow(w http.ResponseWriter, r *http.Request) {

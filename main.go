@@ -45,6 +45,7 @@ func main() {
 		router.Post("/feed-follows", v1.CreateFeedFollow)
 		router.Get("/users/current/feed-follows", v1.GetFeedFollowsForCurrentUser)
 		router.Delete("/feed-follows/{feedFollowId}", v1.DeleteFeedFollow)
+		router.Get("/users/current/posts", v1.GetPostsForCurrentUser)
 	})
 
 	router.Mount("/v1", v1Router)
